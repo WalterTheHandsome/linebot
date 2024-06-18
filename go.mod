@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/google/generative-ai-go v0.14.0
 	github.com/line/line-bot-sdk-go/v8 v8.6.0
+	google.golang.org/api v0.180.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -37,7 +38,6 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/api v0.180.0 // indirect
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240509183442-62759503f434 // indirect

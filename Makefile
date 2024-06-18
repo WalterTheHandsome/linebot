@@ -5,7 +5,7 @@ NowDirName=$$(echo ${PWD} | awk -F '/' '{print $$NF}')
 GoBuildEnv=GO111MODULE=on
 
 env:
-	echo "GO1.20 is required"
+	echo "GO1.21 is required"
 	GO111MODULE=on go get -u	"github.com/line/line-bot-sdk-go/v8/linebot"
 
 mod-tidy:
