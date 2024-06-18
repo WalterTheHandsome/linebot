@@ -8,7 +8,11 @@ import (
 
 	"github.com/line/line-bot-sdk-go/v8/linebot/messaging_api"
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
+
+	"github.com/google/generative-ai-go/genai"
 )
+
+var userSessions = make(map[string]*genai.ChatSession)
 
 func PushTextMessage(msg string) {
 	pushMsg := new(messaging_api.PushMessageRequest)
