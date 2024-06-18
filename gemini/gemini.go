@@ -13,7 +13,11 @@ const ImageTemperture = 0.8
 const ChatTemperture = 0.3
 
 const (
-	GEMINI_TEXT_MODEL_NAME  = "gemini-pro"
+	// gemini-1.0-pro
+	// gemini-1.0-pro-001
+	// gemini-1.5-flash-latest
+	// gemini-1.5-pro-latest
+	GEMINI_TEXT_MODEL_NAME  = "gemini-1.5-flash-latest"
 	GEMINI_IMAGE_MODEL_NAME = "gemini-pro-vision"
 )
 
@@ -37,6 +41,7 @@ func GeminiImage(imgData []byte) (string, error) {
 	resp, err := model.GenerateContent(ctx, prompt...)
 	log.Println("Finished processing image...", resp)
 	if err != nil {
+		fmt.Println("generateContent err", err)
 		log.Fatal(err)
 		return "", err
 	}
@@ -50,7 +55,6 @@ func PrintResponse(resp *genai.GenerateContentResponse) string {
 	for _, cand := range resp.Candidates {
 		for _, part := range cand.Content.Parts {
 			ret = ret + fmt.Sprintf("%v", part)
-			log.Println(part)
 		}
 	}
 	return ret
@@ -66,6 +70,7 @@ func Send(cs *genai.ChatSession, msg string) *genai.GenerateContentResponse {
 	log.Printf("== Me: %s\n== Model:\n", msg)
 	res, err := cs.SendMessage(ctx, genai.Text(msg))
 	if err != nil {
+		log.Println("sendMessage err", err)
 		log.Fatal(err)
 	}
 	return res
@@ -76,6 +81,7 @@ func StartNewChatSession() *genai.ChatSession {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(geminiKey))
 	if err != nil {
+		log.Println("startNewChatSession err -> ", err)
 		log.Fatal(err)
 	}
 	model := client.GenerativeModel(GEMINI_TEXT_MODEL_NAME)

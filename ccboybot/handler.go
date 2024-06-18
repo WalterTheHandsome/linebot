@@ -66,7 +66,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 						},
 					},
 				); err != nil {
-					log.Println(err)
+					log.Println("reply message err->", err)
 				} else {
 					log.Println("Sent text reply.")
 				}
@@ -87,7 +87,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 							},
 						},
 					}); err != nil {
-					log.Print(err)
+					log.Print("reply msg err ->", err)
 				} else {
 					log.Println("Sent sticker reply.")
 				}

@@ -84,7 +84,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 					ret = "無法辨識圖片內容，請重新輸入:" + err.Error()
 				}
 				if err := replyText(e.ReplyToken, ret); err != nil {
-					log.Print(err)
+					log.Println("replyText err ->", err)
 				}
 			case webhook.VideoMessageContent:
 			case webhook.AudioMessageContent:
@@ -106,7 +106,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func replyText(replyToken, text string) error {
-	if _, err := bot.ReplyMessage(
+	_, err := bot.ReplyMessage(
 		&messaging_api.ReplyMessageRequest{
 			ReplyToken: replyToken,
 			Messages: []messaging_api.MessageInterface{
@@ -115,7 +115,8 @@ func replyText(replyToken, text string) error {
 				},
 			},
 		},
-	); err != nil {
+	)
+	if err != nil {
 		log.Println(err)
 		return err
 	}
@@ -124,24 +125,32 @@ func replyText(replyToken, text string) error {
 }
 
 func HanleTextMessageContent(message webhook.TextMessageContent, event webhook.MessageEvent) {
-	if !strings.HasPrefix(message.Text, "/") {
-		log.Println("Wont response -> ", message.Text)
-		return
-	}
-
-	req := message.Text
-	// 檢查是否已經有這個用戶的 ChatSession or req == "reset"
-
+	req := ""
+	log.Println("start handling message", message.Text)
+	log.Println("event Type", event.GetType())
+	log.Println("eventSource Type", event.Source.GetType())
 	// 取得用戶 ID
+	// 檢查是否已經有這個用戶的 ChatSession or req == "reset"
 	var uID string
-	switch source := event.Source.(type) {
-	case *webhook.UserSource:
+	switch event.Source.GetType() {
+	// switch source := event.Source.(type) {
+	case "user":
+		source := event.Source.(webhook.UserSource)
 		uID = source.UserId
-		ShowLoadingAnimation(uID, 15)
-	case *webhook.GroupSource:
+		log.Println("got user", uID)
+		// ShowLoadingAnimation(uID, 15)
+		req = message.Text
+	case "group":
+		source := event.Source.(webhook.GroupSource)
 		uID = source.UserId
-	case *webhook.RoomSource:
-		uID = source.UserId
+		log.Println("got group", uID)
+		if !strings.HasPrefix(message.Text, PREFIX_KEYWORD) {
+			log.Println("Wont response -> ", message.Text)
+			return
+		}
+		req = strings.Replace(message.Text, PREFIX_KEYWORD, "", 1)
+	default:
+		log.Println("unimplmented", event.Source.GetType())
 	}
 
 	// 檢查是否已經有這個用戶的 ChatSession
