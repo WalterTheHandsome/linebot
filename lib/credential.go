@@ -2,14 +2,14 @@ package lib
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
 func ReadCredential(path string) (*ServerCredential, error) {
 	ret := new(ServerCredential)
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

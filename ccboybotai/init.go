@@ -1,4 +1,4 @@
-package ccboybot
+package ccboybotai
 
 import (
 	"log"

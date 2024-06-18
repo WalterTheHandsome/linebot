@@ -21,11 +21,11 @@ clean:
 build: ./main.go clean mod-tidy
 	@go version
 	@printf "[_] Building binary\r"
-	@$(GoBuildEnv) go build -o $(NowDirName) $<
+	@$(GoBuildEnv) go build -o ./dist/$(NowDirName) $<
 	@printf "[v] Building binary\n"
 
 run: build
-	SERVER_PORT=$(DEV_SERVER_PORT) ./linebot
+	SERVER_PORT=$(DEV_SERVER_PORT) ./dist/$(NowDirName)
 
 run-ngrok:
 	echo "ngrok required -> https://ngrok.com/download"
