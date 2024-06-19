@@ -41,7 +41,7 @@ run: build
 	BOT_CHANNEL_SECRET=$(BOT_CHANNEL_SECRET) \
 	BOT_CHANNEL_ACCESS_TOKEN=$(BOT_CHANNEL_ACCESS_TOKEN) \
 	BOT_CHANNEL_USER_ID=$(BOT_CHANNEL_USER_ID) \
-	./dist/$(NowDirName)
+	SERVER_PORT=$(DEV_SERVER_PORT) ./dist/$(NowDirName)
 
 run-ngrok:
 	echo "ngrok required -> https://ngrok.com/download"
