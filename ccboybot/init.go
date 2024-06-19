@@ -17,8 +17,8 @@ var (
 
 func Init() {
 	channelSecret = os.Getenv(ENV_BOT_CHANNEL_SECRET)
+	channelAccessToken = os.Getenv(ENV_BOT_CHANNEL_ACCESS_TOKEN)
 	userID = os.Getenv(ENV_BOT_USER_ID)
-	channelAccessToken = os.Getenv((ENV_BOT_CHANNEL_ACCESS_TOKEN))
 	var err error
 	bot, err = messaging_api.NewMessagingApiAPI(channelAccessToken)
 	if err != nil {

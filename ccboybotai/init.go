@@ -19,10 +19,10 @@ var (
 )
 
 func Init() {
-	channelSecret = os.Getenv(ENV_BOT_CHANNEL_SECRET)
-	userID = os.Getenv(ENV_BOT_USER_ID)
 	aiAPIKey = os.Getenv(ENV_AI_API_KEY)
-	channelAccessToken = os.Getenv(ENV_BOT_CHANNEL_ACCESS_TOKEN)
+	channelSecret = os.Getenv(ENV_AI_BOT_CHANNEL_SECRET)
+	channelAccessToken = os.Getenv(ENV_AI_BOT_CHANNEL_ACCESS_TOKEN)
+	userID = os.Getenv(ENV_AI_BOT_USER_ID)
 
 	gemini.Init(aiAPIKey)
 	var err error

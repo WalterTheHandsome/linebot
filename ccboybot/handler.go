@@ -43,19 +43,6 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 		case webhook.MessageEvent:
 			switch message := e.Message.(type) {
 			case webhook.TextMessageContent:
-				// if strings.ToLower(message.Text) == "firmware" {
-				// 	replyRequest := &messaging_api.ReplyMessageRequest{
-				// 		ReplyToken: e.ReplyToken,
-				// 		Messages: []messaging_api.MessageInterface{
-				// 			messaging_api.Messag{
-				// 			},
-				// 		},
-				// 	}
-				// 	if _, err = bot.ReplyMessage(replyRequest); err != nil {
-				// 		log.Println(err)
-				// 	}
-				// 	continue
-				// }
 				if _, err = bot.ReplyMessage(
 					&messaging_api.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
