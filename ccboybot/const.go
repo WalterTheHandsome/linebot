@@ -3,3 +3,9 @@ package ccboybot
 const (
 	ROUTE_PATH = "/ccboy"
 )
+
+const (
+	ENV_BOT_CHANNEL_SECRET       = "BOT_CHANNEL_SECRET"
+	ENV_BOT_CHANNEL_ACCESS_TOKEN = "BOT_CHANNEL_ACCESS_TOKEN"
+	ENV_BOT_USER_ID              = "BOT_CHANNEL_USER_ID"
+)

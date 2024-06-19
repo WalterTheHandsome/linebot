@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	DEFAULT_SERVER_PORT   = "80"
-	ccboyCredentialPath   = "./ignored/ccboy-credential.yml"
-	ccboyAICredentialPath = "./ignored/ccboy-ai-credential.yml"
+	DEFAULT_SERVER_PORT = "80"
+	// ccboyCredentialPath   = "./ignored/ccboy-credential.yml"
+	// ccboyAICredentialPath = "./ignored/ccboy-ai-credential.yml"
 )
 
 func main() {
-	ccboybot.Init(ccboyCredentialPath)
-	ccboybotai.Init(ccboyAICredentialPath)
+	ccboybotai.Init()
+	ccboybot.Init()
 
 	// Setup HTTP Server for receiving requests from LINE platform
 	http.HandleFunc(ccboybot.ROUTE_PATH, ccboybot.MainHandler)

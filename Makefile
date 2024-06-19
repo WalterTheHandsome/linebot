@@ -24,7 +24,23 @@ build: ./main.go clean mod-tidy
 	@$(GoBuildEnv) go build -o ./dist/$(NowDirName) $<
 	@printf "[v] Building binary\n"
 
+BOT_WITH_AI_ACCESS_TOKEN=$(shell cat ./ignored/ccboy-ai-access-token.txt)
+BOT_WITH_AI_API_KEY=$(shell cat ./ignored/ccboy-ai-api-key.txt)
+BOT_WITH_AI_CHANNEL_SECRET=$(shell cat ./ignored/ccboy-ai-channel-secret.txt)
+BOT_WITH_AI_CHANNEL_USER_ID=$(shell cat ./ignored/ccboy-ai-user-id.txt)
+
+BOT_CHANNEL_ACCESS_TOKEN=$(shell cat ./ignored/ccboy-access-token.txt)
+BOT_CHANNEL_SECRET=$(shell cat ./ignored/ccboy-channel-secret.txt)
+BOT_CHANNEL_USER_ID=$(shell cat ./ignored/ccboy-user-id.txt)
+
 run: build
+	BOT_AI_CHANNEL_ACCESS_TOKEN=$(BOT_WITH_AI_ACCESS_TOKEN) \
+	BOT_AI_API_KEY=$(BOT_WITH_AI_API_KEY) \
+	BOT_AI_CHANNEL_SECRET=$(BOT_WITH_AI_CHANNEL_SECRET) \
+	BOT_AI_CHANNEL_USER_ID=$(BOT_WITH_AI_CHANNEL_USER_ID) \
+	BOT_CHANNEL_SECRET=$(BOT_CHANNEL_SECRET) \
+	BOT_CHANNEL_ACCESS_TOKEN=$(BOT_CHANNEL_ACCESS_TOKEN) \
+	BOT_CHANNEL_USER_ID=$(BOT_CHANNEL_USER_ID) \
 	SERVER_PORT=$(DEV_SERVER_PORT) ./dist/$(NowDirName)
 
 run-ngrok:
