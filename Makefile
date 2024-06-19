@@ -1,5 +1,6 @@
 NGROK_TOKEN=$(shell cat ./ignored/ngrok_token.txt)
-DEV_SERVER_PORT=80
+AI_DEV_SERVER_PORT=8080
+DEV_SERVER_PORT=8090
 
 NowDirName=$$(echo ${PWD} | awk -F '/' '{print $$NF}')
 GoBuildEnv=GO111MODULE=on
@@ -33,14 +34,19 @@ BOT_WITHOUT_AI_CHANNEL_SECRET=$(shell cat ./ignored/ccboy-channel-secret.txt)
 BOT_WITHOUT_AI_CHANNEL_ACCESS_TOKEN=$(shell cat ./ignored/ccboy-access-token.txt)
 BOT_WITHOUT_AI_CHANNEL_USER_ID=$(shell cat ./ignored/ccboy-user-id.txt)
 
-run: build
+run-ai-bot: build
 	BOT_AI_API_KEY=$(BOT_WITH_AI_API_KEY) \
 	BOT_AI_CHANNEL_SECRET=$(BOT_WITH_AI_CHANNEL_SECRET) \
 	BOT_AI_CHANNEL_ACCESS_TOKEN=$(BOT_WITH_AI_ACCESS_TOKEN) \
 	BOT_AI_CHANNEL_USER_ID=$(BOT_WITH_AI_CHANNEL_USER_ID) \
+	IS_AI=true \
+	SERVER_PORT=$(AI_DEV_SERVER_PORT) ./dist/$(NowDirName)
+
+run-bot: build
 	BOT_CHANNEL_SECRET=$(BOT_WITHOUT_AI_CHANNEL_SECRET) \
 	BOT_CHANNEL_ACCESS_TOKEN=$(BOT_WITHOUT_AI_CHANNEL_ACCESS_TOKEN) \
 	BOT_CHANNEL_USER_ID=$(BOT_WITHOUT_AI_CHANNEL_USER_ID) \
+	IS_AI=false \
 	SERVER_PORT=$(DEV_SERVER_PORT) ./dist/$(NowDirName)
 
 run-ngrok:

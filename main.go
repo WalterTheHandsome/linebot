@@ -11,18 +11,21 @@ import (
 )
 
 func main() {
-	ccboybotai.Init()
-	ccboybot.Init()
-
-	// Setup HTTP Server for receiving requests from LINE platform
-	http.HandleFunc(ccboybot.ROUTE_PATH, ccboybot.MainHandler)
-
-	http.HandleFunc(ccboybotai.ROUTE_PATH, ccboybotai.MainHandler)
-	http.HandleFunc(ccboybotai.ROUTE_AUTH, ccboybotai.AuthHandler)
+	isAI := os.Getenv("IS_AI")
+	if isAI == "true" {
+		log.Println("Init ccboybot ai")
+		ccboybotai.Init()
+		http.HandleFunc(ccboybotai.ROUTE_PATH, ccboybotai.MainHandler)
+		http.HandleFunc(ccboybotai.ROUTE_AUTH, ccboybotai.AuthHandler)
+	} else {
+		ccboybot.Init()
+		log.Println("Init ccboybot ")
+		http.HandleFunc(ccboybot.ROUTE_PATH, ccboybot.MainHandler)
+	}
 
 	port := os.Getenv("SERVER_PORT") // for dev
 	if port == "" {
-		port = os.Getenv("PORT") // heroku will assign a port randomly
+		port = os.Getenv("PORT") // Heroku will assign a port randomly
 	}
 	fmt.Println("line bot server starts on ->", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
