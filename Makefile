@@ -45,7 +45,7 @@ run: build
 
 run-ngrok:
 	echo "ngrok required -> https://ngrok.com/download"
-	ngrok config add-authtoken $(NGROK_TOKEN)
-	ngrok http http://localhost:$(DEV_SERVER_PORT)/
+	ngrok start --all --config="./ignored/ngrok.yml"
+
 
 
