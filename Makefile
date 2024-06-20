@@ -29,6 +29,8 @@ BOT_WITH_AI_API_KEY=$(shell cat ./ignored/ccboy-ai-api-key.txt)
 BOT_WITH_AI_CHANNEL_SECRET=$(shell cat ./ignored/ccboy-ai-channel-secret.txt)
 BOT_WITH_AI_ACCESS_TOKEN=$(shell cat ./ignored/ccboy-ai-access-token.txt)
 BOT_WITH_AI_CHANNEL_USER_ID=$(shell cat ./ignored/ccboy-ai-user-id.txt)
+BOT_WITH_AI_FIREBASE_CREDENTIAL=$(shell cat ./ignored/line-bot-play-6f3e99a3a12d.json)
+BOT_WITH_AI_FIREBASE_URL=$(shell cat ./ignored/firebase_url.txt)
 
 BOT_WITHOUT_AI_CHANNEL_SECRET=$(shell cat ./ignored/ccboy-channel-secret.txt)
 BOT_WITHOUT_AI_CHANNEL_ACCESS_TOKEN=$(shell cat ./ignored/ccboy-access-token.txt)
@@ -40,6 +42,8 @@ run-ai-bot: build
 	BOT_AI_CHANNEL_ACCESS_TOKEN=$(BOT_WITH_AI_ACCESS_TOKEN) \
 	BOT_AI_CHANNEL_USER_ID=$(BOT_WITH_AI_CHANNEL_USER_ID) \
 	IS_AI=true \
+	GOOGLE_APPLICATION_CREDENTIALS='$(BOT_WITH_AI_FIREBASE_CREDENTIAL)' \
+	FIREBASE_URL=$(BOT_WITH_AI_FIREBASE_URL) \
 	SERVER_PORT=$(AI_DEV_SERVER_PORT) ./dist/$(NowDirName)
 
 run-bot: build
