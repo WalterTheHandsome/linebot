@@ -12,7 +12,8 @@ var (
 	userID             string
 	channelAccessToken string
 
-	bot *messaging_api.MessagingApiAPI
+	bot      *messaging_api.MessagingApiAPI
+	botState int
 )
 
 func Init() {

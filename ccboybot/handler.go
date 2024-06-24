@@ -5,20 +5,64 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/line/line-bot-sdk-go/v8/linebot/messaging_api"
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
 )
 
-func PushTextMessage(msg string) {
+func PushTextMessage(msg string, user string) {
 	pushMsg := new(messaging_api.PushMessageRequest)
-	pushMsg.To = userID
+	pushMsg.To = user
 	pushMsg.Messages = []messaging_api.MessageInterface{
 		messaging_api.TextMessage{
 			Text: msg,
 		},
 	}
 	bot.PushMessage(pushMsg, "")
+}
+
+func ReplyTextMessage(reply string, replyToken string) {
+	if _, err := bot.ReplyMessage(
+		&messaging_api.ReplyMessageRequest{
+			ReplyToken: replyToken,
+			Messages: []messaging_api.MessageInterface{
+				messaging_api.TextMessage{
+					Text: reply,
+				},
+			},
+		},
+	); err != nil {
+		log.Println("reply message err->", err)
+	} else {
+		log.Println("Sent text reply.")
+	}
+}
+
+func IsCommand(from string) bool {
+	return strings.HasPrefix(from, "/")
+}
+
+func TextMessageRouter(message webhook.TextMessageContent, event webhook.MessageEvent) {
+	msg := message.Text
+	if !IsCommand(msg) && botState == STATE_NONE {
+		return
+	}
+	if botState == STATE_NONE {
+		switch msg {
+		case MENU_LION:
+			botState = STATE_LINE_PENDING_FOR_CHOOSE
+			ReplyLionCarousel(event.ReplyToken)
+			return
+		}
+	}
+
+	if botState > STATE_NONE && botState <= STATE_LION_PENDING_FOR_TO_IT_URL {
+		HandleMenuLion(message, event)
+		return
+	}
+
+	ReplyTextMessage("none", event.ReplyToken)
 }
 
 func MainHandler(w http.ResponseWriter, req *http.Request) {
@@ -43,20 +87,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 		case webhook.MessageEvent:
 			switch message := e.Message.(type) {
 			case webhook.TextMessageContent:
-				if _, err = bot.ReplyMessage(
-					&messaging_api.ReplyMessageRequest{
-						ReplyToken: e.ReplyToken,
-						Messages: []messaging_api.MessageInterface{
-							messaging_api.TextMessage{
-								Text: "[c]" + message.Text,
-							},
-						},
-					},
-				); err != nil {
-					log.Println("reply message err->", err)
-				} else {
-					log.Println("Sent text reply.")
-				}
+				TextMessageRouter(message, e)
 			case webhook.StickerMessageContent:
 				replyMessage := fmt.Sprintf(
 					"sticker id is %s, stickerResourceType is %s, stickerPackageId is %s", message.StickerId, message.StickerResourceType, message.PackageId)
