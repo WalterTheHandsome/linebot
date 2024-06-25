@@ -19,7 +19,7 @@ func (t *ToUX) GetReminder() string {
 	ret := []string{
 		ToUXReminderTemplate,
 		"======= 輸出結果 =======",
-		fmt.Sprintf(ToUXResultTemplate, "${範圍}", "${連結}"),
+		fmt.Sprintf(ToUXResultTemplate, GenExampleField(EXAMPLE_RANGE), GenExampleField(EXAMPLE_URL)),
 	}
 	return strings.Join(ret, "\n")
 }
@@ -30,8 +30,8 @@ func (t *ToUX) Output() string {
 
 func (t *ToUX) Parse(from string) {
 	if t.Reg.MatchString(from) {
-		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "range"))
-		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "url"))
+		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_RANGE))
+		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_URL))
 		return
 	}
 
@@ -54,16 +54,16 @@ func (t *ToIT) GetReminder() string {
 	ret := []string{
 		ToITReminderTemplate,
 		"======= 輸出結果 =======",
-		fmt.Sprintf(ToITResultTemplate, "${範圍}", "${修改內容}", "${連結}"),
+		fmt.Sprintf(ToITResultTemplate, GenExampleField(EXAMPLE_RANGE), GenExampleField(EXAMPLE_CONTENT), GenExampleField(EXAMPLE_URL)),
 	}
 	return strings.Join(ret, "\n")
 }
 
 func (t *ToIT) Parse(from string) {
 	if t.Reg.MatchString(from) {
-		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "range"))
-		t.Content = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "content"))
-		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "url"))
+		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_RANGE))
+		t.Content = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_CONTENT))
+		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_URL))
 		return
 	}
 	t.Content = "none"

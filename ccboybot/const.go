@@ -1,5 +1,7 @@
 package ccboybot
 
+import "fmt"
+
 const (
 	ROUTE_PATH = "/ccboy"
 )
@@ -11,9 +13,31 @@ const (
 )
 
 const (
-	MENU_LION       = "/雄獅"
-	MENU_LION_TO_UX = "/toUX"
-	MENU_LION_TO_IT = "/toIT"
+	MENU_LION            = "/雄獅"
+	MENU_LION_TO_UX      = "/toUX"
+	MENU_LION_TO_IT      = "/toIT"
+	MENU_LION_ONLINE_1   = "/online1"
+	MENU_LION_ONLINE_2_3 = "/online2And3"
+)
+
+const (
+	EXAMPLE_RANGE         = "範圍"
+	EXAMPLE_URL           = "連結"
+	EXAMPLE_CONTENT       = "修改內容"
+	EXAMPLE_ONLINE_DATE   = "日期"
+	EXAMPLE_ONLINE_TIME   = "上線時間"
+	EXAMPLE_TICKET_NUMBER = "單號"
+	EXAMPLE_UPDATE_ITEM   = "更新項目"
+	EXAMPLE_PR_LINK       = "PR網址"
+
+	FIELD_RANGE       = "range"
+	FIELD_URL         = "url"
+	FIELD_CONTENT     = "content"
+	FIELD_ONLINE_DATE = "onlineDate"
+	FIELD_ONLINE_TIME = "onlineTime"
+	FIELD_TICKET_NO   = "ticketNo"
+	FIELD_UPDATE_ITEM = "updateItem"
+	FIELD_PR_LINK     = "prLink"
 )
 
 const (
@@ -21,22 +45,31 @@ const (
 	STATE_LION_PENDING_FOR_CHOOSE
 	STATE_LION_PENDING_FOR_TO_UX_INPUT
 	STATE_LION_PENDING_FOR_TO_IT_INPUT
+	STATE_LION_PENDING_FOR_TO_ONLINE_1
+	STATE_LION_PENDING_FOR_TO_ONLINE_2_AND_3
 )
 
-// const regex
+func GenExampleField(from string) string {
+	return fmt.Sprintf("${%s}", from)
+}
 
+// const regex
 const (
-	toUXRegString = `1\.(?P<range>.+)\n2\.(?P<url>.+)`
-	toITRegString = `1\.(?P<range>.+)\n2\.(?P<content>.+)\n3\.(?P<url>.+)`
+	toUXRegString = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_URL + `>.+)`
+	toITRegString = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_CONTENT + `>.+)\n3\.(?P<` + FIELD_URL + `>.+)`
+)
+
+var (
+	ToUXReminderTemplate        = "請輸入下列欄位:\n1.${範圍}\n2.${連結}\n"
+	ToITReminderTemplate        = "請輸入下列欄位:\n1.${範圍}\n2.${修改內容}\n3.${連結}\n"
+	OnlineStep1ReminderTemplate = "請輸入下列欄位:\n1.${日期}\n2.${連結}\n"
 )
 
 // const lion
 const (
-	ToUXReminderTemplate = "請輸入下列欄位:\n1.${範圍}\n2.${連結}\n"
-	ToITReminderTemplate = "請輸入下列欄位:\n1.${範圍}\n2.${修改內容}\n3.${連結}\n"
-
-	ToUXResultTemplate = "*%s* 的切版更新到demo機了,再麻煩你有空的時候幫忙驗收,感謝\n%s"
-	ToITResultTemplate = "下方為 *%s* 的切版檔, *%s* 已更新上測試機,再麻煩了,謝謝~\n%s"
+	ToUXResultTemplate        = "*%s* 的切版更新到demo機了,再麻煩你有空的時候幫忙驗收,感謝\n%s"
+	ToITResultTemplate        = "下方為 *%s* 的切版檔, *%s* 已更新上測試機,再麻煩了,謝謝~\n%s"
+	OnlineStep1ResultTemplate = "*%s* 預計上線PB\n%s\n若沒問題將開始進行上版流程"
 
 	LionMainMenuCarouselJsonString = `{
 		"type": "carousel",
