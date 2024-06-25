@@ -3,6 +3,7 @@ package ccboybot
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/line/line-bot-sdk-go/v8/linebot/messaging_api"
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
@@ -11,82 +12,68 @@ import (
 type ToUX struct {
 	Range string
 	URL   string
+	Reg   *Reg
+}
+
+func (t *ToUX) GetReminder() string {
+	ret := []string{
+		ToUXReminderTemplate,
+		"======= 輸出結果 =======",
+		fmt.Sprintf(ToUXResultTemplate, "${範圍}", "${連結}"),
+	}
+	return strings.Join(ret, "\n")
+}
+
+func (t *ToUX) Output() string {
+	return fmt.Sprintf(ToUXResultTemplate, t.Range, t.URL)
+}
+
+func (t *ToUX) Parse(from string) {
+	if t.Reg.MatchString(from) {
+		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "range"))
+		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "url"))
+		return
+	}
+
+	t.Range = "none"
+	t.URL = "none"
 }
 
 type ToIT struct {
 	Range   string
 	Content string
 	URL     string
+	Reg     *Reg
 }
 
-const (
-	ToUXTemplate = "%s的切版更新到demo機了,再麻煩你有空的時候幫忙驗收,感謝\n%s"
-	ToITTemplate = "下方為%s的切版檔,%s已更新上測試機,再麻煩了,謝謝~\n%s"
+func (t *ToIT) Output() string {
+	return fmt.Sprintf(ToITResultTemplate, t.Range, t.Content, t.URL)
+}
 
-	LionMainMenuCarouselJsonString = `{
-		"type": "carousel",
-		"contents": [
-			{
-				"type": "bubble",
-				"body": {
-					"type": "box",
-					"layout": "vertical",
-					"contents": [
-						{
-							"type": "text",
-							"text": "–切版檔UX確認文案–"
-						}
-					]
-				},
-				"footer": {
-					"type": "box",
-					"layout": "vertical",
-					"contents": [
-						{
-							"type": "button",
-							"action": {
-								"type": "message",
-								"label": "開始",
-								"text": "/toUX"
-							}
-						}
-					]
-				}
-			},
-			{
-				"type": "bubble",
-				"body": {
-					"type": "box",
-					"layout": "vertical",
-					"contents": [
-						{
-							"type": "text",
-							"text": "–切版檔交付IT文案–"
-						}
-					]
-				},
-				"footer": {
-					"type": "box",
-					"layout": "vertical",
-					"contents": [
-						{
-							"type": "button",
-							"action": {
-								"type": "message",
-								"label": "開始",
-								"text": "/toIT"
-							}
-						}
-					],
-					"action": {
-						"type": "message",
-						"label": "開始",
-						"text": "/toIT"
-					}
-				}
-			}
-		]
-	}`
+func (t *ToIT) GetReminder() string {
+	ret := []string{
+		ToITReminderTemplate,
+		"======= 輸出結果 =======",
+		fmt.Sprintf(ToITResultTemplate, "${範圍}", "${修改內容}", "${連結}"),
+	}
+	return strings.Join(ret, "\n")
+}
+
+func (t *ToIT) Parse(from string) {
+	if t.Reg.MatchString(from) {
+		t.Range = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "range"))
+		t.Content = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "content"))
+		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, "url"))
+		return
+	}
+	t.Content = "none"
+	t.Range = "none"
+	t.URL = "none"
+}
+
+var (
+	toUX *ToUX
+	toIT *ToIT
 )
 
 func ReplyLionCarousel(replyToken string) {
@@ -109,70 +96,57 @@ func ReplyLionCarousel(replyToken string) {
 	}
 }
 
-var (
-	toUX = new(ToUX)
-	toIT = new(ToIT)
-)
-
 func reset() {
+	log.Println("reset state and var")
 	botState = STATE_NONE
 	toUX = new(ToUX)
+	toUX.Reg = new(Reg)
+	toUX.Reg.Init(toUXRegString)
 	toIT = new(ToIT)
+	toIT.Reg = new(Reg)
+	toIT.Reg.Init(toITRegString)
 }
 
 func HandleMenuLion(message webhook.TextMessageContent, event webhook.MessageEvent) {
 	msg := message.Text
 
 	switch botState {
-	case STATE_LINE_PENDING_FOR_CHOOSE:
+	case STATE_LION_PENDING_FOR_CHOOSE:
 		if IsCommand(msg) {
 			switch msg {
 			case MENU_LION_TO_UX:
-				botState = STATE_LION_PENDING_FOR_TO_UX_RANGE
+				botState = STATE_LION_PENDING_FOR_TO_UX_INPUT
+				ReplyTextMessage(toUX.GetReminder(), event.ReplyToken)
 			case MENU_LION_TO_IT:
-				botState = STATE_LION_PENDING_FOR_TO_IT_RANGE
+				botState = STATE_LION_PENDING_FOR_TO_IT_INPUT
+				ReplyTextMessage(toIT.GetReminder(), event.ReplyToken)
 			}
-			ReplyTextMessage("請輸入範圍", event.ReplyToken)
 			return
 		}
-	case STATE_LION_PENDING_FOR_TO_UX_RANGE:
+	case STATE_LION_PENDING_FOR_TO_UX_INPUT:
 		if !IsCommand(msg) {
-			botState = STATE_LION_PENDING_FOR_TO_UX_URL
-			toUX.Range = msg
-			ReplyTextMessage("請輸入連結", event.ReplyToken)
-			return
-		}
-	case STATE_LION_PENDING_FOR_TO_UX_URL:
-		if !IsCommand(msg) {
-			toUX.URL = msg
-			reply := fmt.Sprintf(ToUXTemplate, toUX.Range, toUX.URL)
-			ReplyTextMessage(reply, event.ReplyToken)
+			toUX.Parse(msg)
+			ReplyTextMessage(toUX.Output(), event.ReplyToken)
 			reset()
 			return
 		}
-	case STATE_LION_PENDING_FOR_TO_IT_RANGE:
+	case STATE_LION_PENDING_FOR_TO_IT_INPUT:
 		if !IsCommand(msg) {
-			toIT.Range = msg
-			botState = STATE_LION_PENDING_FOR_TO_IT_CONTENT
-			ReplyTextMessage("請輸入更新內容", event.ReplyToken)
-			return
-		}
-	case STATE_LION_PENDING_FOR_TO_IT_CONTENT:
-		if !IsCommand(msg) {
-			toIT.Content = msg
-			botState = STATE_LION_PENDING_FOR_TO_IT_URL
-			ReplyTextMessage("請輸入連結", event.ReplyToken)
-			return
-		}
-	case STATE_LION_PENDING_FOR_TO_IT_URL:
-		if !IsCommand(msg) {
-			toIT.URL = msg
-			reply := fmt.Sprintf(ToITTemplate, toIT.Range, toIT.Content, toIT.URL)
-			ReplyTextMessage(reply, event.ReplyToken)
+			toIT.Parse(msg)
+			ReplyTextMessage(toIT.Output(), event.ReplyToken)
 			reset()
 			return
 		}
 	default:
 		reset()
 	}
+}
+
+func init() {
+	toUX = new(ToUX)
+	toIT = new(ToIT)
+	toUX.Reg = new(Reg)
+	toIT.Reg = new(Reg)
+	toUX.Reg.Init(toUXRegString)
+	toIT.Reg.Init(toITRegString)
 }
