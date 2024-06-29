@@ -1,7 +1,5 @@
 package ccboybot
 
-import "fmt"
-
 const (
 	ROUTE_PATH = "/ccboy"
 )
@@ -30,14 +28,16 @@ const (
 	EXAMPLE_UPDATE_ITEM   = "更新項目"
 	EXAMPLE_PR_LINK       = "PR網址"
 
-	FIELD_RANGE       = "range"
-	FIELD_URL         = "url"
-	FIELD_CONTENT     = "content"
-	FIELD_ONLINE_DATE = "onlineDate"
-	FIELD_ONLINE_TIME = "onlineTime"
-	FIELD_TICKET_NO   = "ticketNo"
-	FIELD_UPDATE_ITEM = "updateItem"
-	FIELD_PR_LINK     = "prLink"
+	FIELD_NONE_INDICATOR = "none"
+	FIELD_RANGE          = "range"
+	FIELD_URL            = "url"
+	FIELD_CONTENT        = "content"
+	FIELD_ONLINE_DATE    = "onlineDate"
+	FIELD_ONLINE_TIME    = "onlineTime"
+	FIELD_TICKET_NO      = "ticketNo"
+	FIELD_UPDATE_ITEM    = "updateItem"
+	FIELD_PR_LINK        = "prLink"
+	FIELD_PROJECT_NAME   = "projectName"
 )
 
 const (
@@ -49,20 +49,21 @@ const (
 	STATE_LION_PENDING_FOR_TO_ONLINE_2_AND_3
 )
 
-func GenExampleField(from string) string {
-	return fmt.Sprintf("${%s}", from)
-}
-
 // const regex
 const (
-	toUXRegString = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_URL + `>.+)`
-	toITRegString = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_CONTENT + `>.+)\n3\.(?P<` + FIELD_URL + `>.+)`
+	// `1\.(?P<onlineDate>).+\n2\.(?P<url>.+)`
+	toUXRegString                = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_URL + `>.+)`
+	toITRegString                = `1\.(?P<` + FIELD_RANGE + `>.+)\n2\.(?P<` + FIELD_CONTENT + `>.+)\n3\.(?P<` + FIELD_URL + `>.+)`
+	onlineStep1RegString         = `1\.(?P<` + FIELD_ONLINE_DATE + `>.+)\n2\.(?P<` + FIELD_URL + `>.+)`
+	onlineStep2AndStep3RegString = ``
 )
 
 var (
-	ToUXReminderTemplate        = "請輸入下列欄位:\n1.${範圍}\n2.${連結}\n"
-	ToITReminderTemplate        = "請輸入下列欄位:\n1.${範圍}\n2.${修改內容}\n3.${連結}\n"
-	OnlineStep1ReminderTemplate = "請輸入下列欄位:\n1.${日期}\n2.${連結}\n"
+	ToUXReminderTemplate                = "請輸入下列欄位:\n1.${範圍}\n2.${連結}\n"
+	ToITReminderTemplate                = "請輸入下列欄位:\n1.${範圍}\n2.${修改內容}\n3.${連結}\n"
+	OnlineStep1ReminderTemplate         = "請輸入下列欄位:\n1.${日期}\n2.${連結}\n"
+	OnlineStep2AndStep3ReminderTemplate = "請輸入下列欄位:\n1.${日期}\n2.${單號}\n3.${連結}\n4.${更新項目}\n5.${上線時間}\n6.${專案名稱}\n7.${PR網址},${PR網址}....\n"
+	OutputSeperatorTemplate             = "======= 輸出結果 ======="
 )
 
 // const lion
@@ -70,6 +71,8 @@ const (
 	ToUXResultTemplate        = "*%s* 的切版更新到demo機了,再麻煩你有空的時候幫忙驗收,感謝\n%s"
 	ToITResultTemplate        = "下方為 *%s* 的切版檔, *%s* 已更新上測試機,再麻煩了,謝謝~\n%s"
 	OnlineStep1ResultTemplate = "*%s* 預計上線PB\n%s\n若沒問題將開始進行上版流程"
+	OnlineStep2ResultTemplate = "*%s* 訂房夜間過板\n單號 *%s* \n更新項目 *%s*\n\n以上為 *%s* 晚間上線的內容,請問預計安排 *%s* 上線可以嗎? PR release後續更新"
+	// OnlineStep3ResultTemplate = "*%s* 預計上線PB\n%s\n若沒問題將開始進行上版流程"
 
 	LionMainMenuCarouselJsonString = `{
 		"type": "carousel",

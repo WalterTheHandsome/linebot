@@ -57,7 +57,7 @@ func TextMessageRouter(message webhook.TextMessageContent, event webhook.Message
 		}
 	}
 
-	if botState > STATE_NONE && botState <= STATE_LION_PENDING_FOR_TO_IT_INPUT {
+	if botState > STATE_NONE && botState <= STATE_LION_PENDING_FOR_TO_ONLINE_2_AND_3 {
 		HandleMenuLion(message, event)
 		return
 	}
