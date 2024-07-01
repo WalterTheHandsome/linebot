@@ -81,7 +81,7 @@ func MainHandler(w http.ResponseWriter, req *http.Request) {
 
 	log.Println("Handling events...")
 	for _, event := range cb.Events {
-		log.Printf("%s called%+v...\n", ROUTE_PATH, event)
+		log.Printf("%s called %+v...\n", ROUTE_PATH, event)
 
 		switch e := event.(type) {
 		case webhook.MessageEvent:

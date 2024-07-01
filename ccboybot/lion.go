@@ -73,7 +73,6 @@ func (o *OnlineStep2AndStep3) Parse(from string) {
 	if o.Reg.MatchString(from) {
 		o.Date = strings.TrimSpace(o.Reg.GetSubMatchStringBySubName(from, EXAMPLE_ONLINE_DATE))
 		o.OnlineTime = strings.TrimSpace(o.Reg.GetSubMatchStringBySubName(from, EXAMPLE_ONLINE_TIME))
-
 		return
 	}
 	o.Date = FIELD_NONE_INDICATOR
@@ -115,8 +114,8 @@ func (o *OnlineStep1) Parse(from string) {
 		o.URL = strings.TrimSpace(o.Reg.GetSubMatchStringBySubName(from, FIELD_URL))
 		return
 	}
-	o.Date = "none"
-	o.URL = "none"
+	o.Date = FIELD_NONE_INDICATOR
+	o.URL = FIELD_NONE_INDICATOR
 }
 
 func (o *OnlineStep1) Reset() {
@@ -143,8 +142,8 @@ func (t *ToUX) Parse(from string) {
 		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_URL))
 		return
 	}
-	t.Range = "none"
-	t.URL = "none"
+	t.Range = FIELD_NONE_INDICATOR
+	t.URL = FIELD_NONE_INDICATOR
 }
 
 func (t *ToUX) Reset() {
@@ -172,9 +171,9 @@ func (t *ToIT) Parse(from string) {
 		t.URL = strings.TrimSpace(t.Reg.GetSubMatchStringBySubName(from, FIELD_URL))
 		return
 	}
-	t.Content = "none"
-	t.Range = "none"
-	t.URL = "none"
+	t.Content = FIELD_NONE_INDICATOR
+	t.Range = FIELD_NONE_INDICATOR
+	t.URL = FIELD_NONE_INDICATOR
 }
 
 func (t *ToIT) Reset() {
